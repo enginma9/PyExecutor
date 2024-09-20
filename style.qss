@@ -1,0 +1,56 @@
+QMainWindow, QDialog {
+    background: qlineargradient(x1:0 y1:0, x2:1 y2:1, stop:0 #051c2a stop:1 #44315f);
+    border-radius: 5px;
+}
+
+/* in code file: self.btn2.setObjectName('styleid') */
+QPushButton#styleid {
+    background-color: qlineargradient( x1:0, x2:1, stop:0 #c75b72, stop: 1 #733e84);
+}
+/* this may be right? in code file: self.top_label1.setProperty('class', 'styleclass') */
+QPushButton.styleclass {
+    background-color: qlineargradient( x1:0, x2:1, stop:0 #c75b72, stop: 1 #733e84);
+}
+
+/* All QPushButtons */
+QPushButton {
+    color: aqua;
+    background-color: qlineargradient( x1:0, x2:1, stop:0 #c75b72, stop: 1 #733e84);
+    border-style: outset;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: aqua;
+    padding: 4px;
+}
+QTabWidget {
+    background-color:#05062a;
+}
+QTabBar {
+    background-color:rgb(68, 44, 71);
+}
+
+QTextEdit, QPlainTextEdit, QLineEdit, QListWidget, CustomTextEdit {
+    background-color: #000000; 
+    border-style: outset;
+    border-width: 1px;
+    border-color: aqua;
+    border-width: 1px;
+    border-radius: 6px;
+    background-color:black;
+    font-size: 14pt
+}
+
+
+QPushButton:hover {
+    border-width: 2px;
+}
+QPushButton:pressed {
+    background-color:#411e46;
+    
+}
+
+QListWidget{
+    background-color:black;
+    color:white;
+}
+
