@@ -1,6 +1,5 @@
 import io
 
-
 class OutputRedirector( io.StringIO ):
     """
     Custom class to redirect stdout and stderr to capture outputs and errors.

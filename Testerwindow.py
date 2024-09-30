@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import ( QWidget, QApplication, QToolButton, QPushButton,
-    QVBoxLayout, QDialog, QMenu, QLineEdit
+    QVBoxLayout, QDialog, QMenu, QLineEdit, QScrollArea
 )
 from CustomText import CustomTextEdit
 

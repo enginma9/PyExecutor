@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTabBar, QFileDialog
+from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5 import QtGui
 from CustomText import CustomTextEdit
 from pathlib import Path
