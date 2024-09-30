@@ -73,7 +73,6 @@ class testerwindow( QWidget ):
         """
         if not QApplication.instance():
             self.app = QApplication( sys.argv )
-
         super().__init__()
         scroll_area = QScrollArea()
         self.item_dict = {}  # To hold references to items created
@@ -86,7 +85,7 @@ class testerwindow( QWidget ):
         if args and isinstance( args, list ):
             for text, function in args:
                 self.add_button( function, text )
-
+        self.setGeometry(100, 100, 400, 500)
         self.setWindowTitle( 'Tester Window' )
         self.show()
         #self.hide_keyboard_lsnr()
@@ -163,6 +162,7 @@ class testerwindow( QWidget ):
 
         # Store reference in item_dict
         self.item_dict[ title ] = text_edit
+        self.item_dict[ title ].setPlaceholderText( title )
 
     def get_text_from( self, input_field_name ):
         """

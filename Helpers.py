@@ -1,6 +1,9 @@
+import inspect
 
 def get_globals():
-    for item in globals(): 
+    caller_frame = inspect.currentframe().f_back
+    caller_globals = caller_frame.f_globals
+    for item in caller_globals: 
         print( item )
 
 def print_list( x_list ):

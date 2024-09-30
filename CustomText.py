@@ -71,6 +71,7 @@ class CustomTextEdit(QTextEdit):
         font.setStyleHint( QFont.Monospace )  # Ensure monospaced style
         font.setPointSize(13)
         self.setFont( font )
+        self.setAcceptRichText( False )
 
         # Create context menu items
         self.increase_font_action = QAction( "Increase Font", self )

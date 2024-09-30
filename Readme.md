@@ -55,4 +55,4 @@ The primary reason I made this is that I didn't want to use too many calls to AP
 The Testerwindow.py is somewhat a completely different thing, Its meant to add to the testing environment by easily adding buttons to correspond to commands, or TextEdits to hold code needed, etc.  
 You can run some of the text from Examples.py to demonstrate Testerwindow, and live edit the window while its running.
 
-Frameless version dragging doesn't work through all OS, so use at your own risk.  I'm probably going to remove it at some point.
+Frameless version window movement doesn't work through all OS, so use at your own risk.  I'm probably going to remove it at some point.

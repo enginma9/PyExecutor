@@ -5,7 +5,8 @@ def import_modules():
     import_module( "PyQt5.QtWidgets", fromlist=[ 
         "QApplication", "QWidget", "QVBoxLayout", "QHBoxLayout", "QTabWidget",
         "QPushButton", "QLineEdit", "QLabel", "QTextEdit", "QListWidget", 
-        "QPlainTextEdit", "QAction", "QAbstractItemView", "QDialog", "QMenu"
+        "QPlainTextEdit", "QAction", "QAbstractItemView", "QDialog", "QMenu",
+        "QSplitter"
     ] )
     import_module( "PyQt5.QtGui", fromlist=[ "QClipboard","QFont","QCursor", "QTextCursor" ] )
     import_module( "PyQt5.QtCore", fromlist=[ "Qt" ] )
@@ -79,7 +80,7 @@ class Executor( QWidget ):
         
         # Hidden Input
         self.input_line = QLineEdit(self)
-        self.input_line.setPlaceholderText("Input)")
+        self.input_line.setPlaceholderText("Input")
         self.input_line.setEnabled(False)  # Disabled until input() is called
         self.layout.addWidget(self.input_line)
         self.input_line.hide()
@@ -87,7 +88,7 @@ class Executor( QWidget ):
         # Connect Enter key to simulate input
         self.input_line.returnPressed.connect( self.submit_input )
 
-        self.shared_namespace.update({"input": self.input_line})
+        self.shared_namespace.update({"input": self.custom_input})
         
     def build_labels( self ): # creates label_box, builds all labels and places# Mid
         #QVBoxLayout with 4 labels
@@ -133,6 +134,7 @@ class Executor( QWidget ):
         # First tab for output and error lists
         self.output_error_tab = QWidget()
         self.output_error_layout = QVBoxLayout( self.output_error_tab )
+        self.std_split = QSplitter(Qt.Vertical)
         # Add tab to tab widget
         self.tab_widget.addTab( self.output_error_tab, "stdout/stderr" )
         
@@ -143,9 +145,9 @@ class Executor( QWidget ):
         self.output_list.setAlternatingRowColors( True )
         self.error_list.setAlternatingRowColors( True )
         # Place
-        self.output_error_layout.addWidget( self.output_list )
-        self.output_error_layout.addWidget( self.error_list )
-
+        self.std_split.addWidget( self.output_list )
+        self.std_split.addWidget( self.error_list )
+        self.output_error_layout.addWidget( self.std_split )
         # Enable context menu
         #self.output_list.setContextMenuPolicy( Qt.CustomContextMenu )
         #self.output_list.customContextMenuRequested.connect( self.show_context_menu )
@@ -211,11 +213,13 @@ class Executor( QWidget ):
 
     def clear_combined( self ):
         self.combined_list.clear()
-    
+
     def custom_input(self, prompt=""):
-        """Custom input function that will wait for input from the QLineEdit."""
+        #\"""Custom input function that will wait for input from the QLineEdit.\"""
         # Display the prompt in the QListWidget
-        self.output_list.addItem( "--> " + str( prompt ) )
+        #print("custom_input")
+        self.output_list.addItem( "" + str( prompt ) )
+        self.input_line.setPlaceholderText( prompt )
         self.output_list.scrollToBottom()
 
         # Show and enable the input line when input is needed
@@ -227,7 +231,7 @@ class Executor( QWidget ):
 
         # Log the code to the combined widget with a prefix
         self.combined_list.addItem( "?> " + str( prompt ) )
-        self.output_list.addItem( prompt )
+        #self.output_list.addItem( prompt )
 
         # Block execution until input is provided (this will wait until input_value is set)
         while self.waiting_for_input:
@@ -246,7 +250,8 @@ class Executor( QWidget ):
         return self.input_value
 
     def submit_input(self):
-        """Called when the user presses Enter in the QLineEdit."""
+        #\"""Called when the user presses Enter in the QLineEdit.\"""
+        #print("submit_input")
         if self.waiting_for_input:
             self.input_value = self.input_line.text()
             self.input_line.clear()

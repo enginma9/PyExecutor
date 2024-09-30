@@ -79,7 +79,29 @@ clipboard = QApplication.clipboard()
 clipboard.setText( text )''',
 '''def move_text( move_from, move_to ):
 the_window.item_dict[ move_to ].setText( the_window.get_text_from( move_from ) )
-''',
+''','''
+#Template 
+import Divide
+from Testerwindow import testerwindow
+import os
+this_window = Divide.Executor()
+this_window.setStyleSheet( os.path.expanduser( '~/.Library/Executor/style.qss' ) )
+
+def clip( text ): # Does not work with empty string: ""
+    clipboard = QApplication.clipboard()
+    clipboard.setText( text )
+
+other_window = testerwindow()
+
+def move_text( move_from, move_to ):
+    other_window.item_dict[ move_to ].setText( other_window.get_text_from( move_from ) )
+
+other_window.add_button( lambda: print( "#"*50 ), "#"*50 )
+
+other_window.add_text_line( "Text Line 1" )
+other_window.add_button( lambda: clip( other_window.get_text_from( "Text Block 1" ) ), "Copy 1")
+other_window.add_text_block( "Text Block 1" )
+'''
    
 ]
 

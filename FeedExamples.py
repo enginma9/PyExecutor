@@ -7,7 +7,9 @@ if __name__ == "__main__":
 
 def test_w_feed( url ):
     feed = feedparser.parse( url )
-    print( get_tree_diagram( feed, url ) )
+    #print( get_tree_diagram( feed, url ) )
+    for line in get_tree_diagram( feed, url ).split("\n"):
+       print( line )
     return feed
 
 
