@@ -56,17 +56,15 @@ class QSyntaxHighlighterFormatter:
 
     def get_format(self, token_type):
         """Return the QTextCharFormat for a given Pygments token type."""
-        return self.formats.get(token_type )#, QTextCharFormat())  # Return default if not mapped
+        return self.formats.get( token_type, QTextCharFormat())  # Return default if not mapped
 
 
 class CustomTextEdit(QTextEdit):
-    """Custom QTextEdit that replaces tabs with 4 spaces"""
-
     def __init__(self, parent=None):
         if not QApplication.instance():
             self.app = QApplication( sys.argv )
         super().__init__(parent)
-        self.setPlainText("# Start typing Python code here...")  # Ensure plain text
+        self.setPlaceholderText('Start typing Python code here...')
         self.highlighter = PythonHighlighter(self.document())  # Apply highlighter
 
         font = QFont( "Courier New" )
