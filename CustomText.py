@@ -96,14 +96,18 @@ class CustomTextEdit(QTextEdit):
     def increase_font(self):
         font = self.font()
         new_size = font.pointSize() + 1
+        #print( new_size )
+        #print( font )
         font.setPointSize(new_size)
         self.setFont(font)
 
     def decrease_font(self):
         font = self.font()
         new_size = max(font.pointSize() - 1, 8)  # Ensure minimum font size
+        #print( new_size )
         font.setPointSize(new_size)
         self.setFont(font)
+        #print( self.font() )
 
     def show_context_menu(self, point):
         menu = self.createStandardContextMenu()  # Get default context menu

@@ -1,42 +1,65 @@
-# Import PyQt resources
-from PyQt5.QtWidgets import ( QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
-    QPushButton, QLineEdit, QLabel, QListWidget, QTabWidget, QMenu, 
-    QAbstractItemView, QDialog )
-from PyQt5.QtGui import QClipboard, QFont, QCursor, QTextCursor
-from PyQt5.QtCore import Qt
-# Other Libraries
-import sys
-import io
-# This project 
-from CustomText import CustomTextEdit
-from Helpers import get_globals, print_attributes, print_keys, print_nested, get_nested_keys
-from OutputRedirect import OutputRedirector
-from Testerwindow import testerwindow
-from Examples import print_example
+import sys, io
 
+def import_modules():
+    # Qt Modules
+    import_module( "PyQt5.QtWidgets", fromlist=[ 
+        "QApplication", "QWidget", "QVBoxLayout", "QHBoxLayout", "QTabWidget",
+        "QPushButton", "QLineEdit", "QLabel", "QTextEdit", "QListWidget", 
+        "QPlainTextEdit", "QAction", "QAbstractItemView", "QDialog", "QMenu",
+        "QSplitter"
+    ] )
+    import_module( "PyQt5.QtGui", fromlist=[ "QClipboard","QFont","QCursor", "QTextCursor" ] )
+    import_module( "PyQt5.QtCore", fromlist=[ "Qt" ] )
+    # This project
+    import_module( "OutputRedirect", fromlist=[ "OutputRedirector" ] )
+    import_module( "Helpers.Helpers", fromlist=[ "get_globals", "print_attributes", "print_keys", "print_nested", "get_nested_keys" ] )
+    import_module( "CustomText", fromlist=[ "CustomTextEdit" ] )
+    import_module( "Testerwindow", fromlist=["testerwindow"] )
 
-class CodeExecutorWindow( QDialog ):
-    """
-    A PyQt5 window with a text box to input Python code and a button to execute the code in the console.
+def import_module(modulename, shortname=None, asfunction=False, fromlist=None):
+    # Only using this on top-level module rather than having every import in the project in globals()
+    if shortname is None:
+        shortname = modulename
     
-    Run this python file directly to get the CodeExecutorWindow window, or import it from python console, and:
-        `import Executor`
-        `window = Executor.CodeExecutorWindow()`
-        - or -
-        `from Executor import CodeExecutorWindow`
-        `window = CodeExecutorWindow()`
+    if asfunction is False:
+        if fromlist:
+            # Handle sub-item imports like "from PyQt5.QtWidgets import QApplication"
+            module = __import__(modulename, fromlist=fromlist)
+            for item in fromlist:
+                globals()[item] = getattr(module, item)
+        else:
+            # Simple import case
+            globals()[shortname] = __import__(modulename)
+    else:
+        # Handle function or specific item import like "from X import Y"
+        module = __import__(modulename, fromlist=[shortname])
+        globals()[shortname] = getattr(module, shortname)
 
-        You don't have to do the normal `app = QApplication( sys.argv )` as it is done in the __init__
-    You can also try frameless_executor.py
+import_modules()
+#print("Imports successful.")
 
-    """
+class Executor( QWidget ):
     def __init__( self ):
         if not QApplication.instance():
             self.app = QApplication( sys.argv )
         super().__init__()
-        # 
-        self.shared_namespace = globals()
 
+        self.shared_namespace = globals()
+        self.layout = QVBoxLayout( self )
+        self.set_style()
+        self.build_top() # 
+        self.build_labels() # creates label_box, builds all labels and places
+        self.build_bottom()
+
+        self.run_button.clicked.connect( self.run_code )
+
+        # Set up window
+        self.setWindowTitle('Executor 2.0')
+        self.show()
+        self.redirect()
+        
+    def set_style( self ):
+        self.setObjectName('Executor')
         # Set Style
         try:
             styleFile = "style.qss" 
@@ -45,10 +68,7 @@ class CodeExecutorWindow( QDialog ):
         except:
             pass
 
-        # Base
-        # Set up the layout
-        self.layout = QVBoxLayout( self )
-
+    def build_top( self ): # 
         # Top
         # Text box for user to input Python code
         self.code_input = CustomTextEdit( self )
@@ -60,7 +80,7 @@ class CodeExecutorWindow( QDialog ):
         
         # Hidden Input
         self.input_line = QLineEdit(self)
-        self.input_line.setPlaceholderText("Input)")
+        self.input_line.setPlaceholderText("Input")
         self.input_line.setEnabled(False)  # Disabled until input() is called
         self.layout.addWidget(self.input_line)
         self.input_line.hide()
@@ -68,9 +88,9 @@ class CodeExecutorWindow( QDialog ):
         # Connect Enter key to simulate input
         self.input_line.returnPressed.connect( self.submit_input )
 
-        self.shared_namespace.update({"input": self.input_line})
+        self.shared_namespace.update({"input": self.custom_input})
         
-        # Mid
+    def build_labels( self ): # creates label_box, builds all labels and places# Mid
         #QVBoxLayout with 4 labels
         self.label_box = QHBoxLayout()
         
@@ -101,38 +121,45 @@ class CodeExecutorWindow( QDialog ):
         #self.label_box.setContentsMargins( 0,0,0,0 )
         self.layout.addWidget( temp_widget )
 
-        #########################
-        # Bottom
-        #########################
-
+    def build_bottom( self ):
         # Create a tab widget
         self.tab_widget = QTabWidget( self )
         self.layout.addWidget( self.tab_widget )
 
-        #########################
-        # Tab 1
-        #########################
+        self.build_first_tab()
+        self.build_second_tab()
+        # place
 
+    def build_first_tab( self ):
         # First tab for output and error lists
         self.output_error_tab = QWidget()
         self.output_error_layout = QVBoxLayout( self.output_error_tab )
+        self.std_split = QSplitter(Qt.Vertical)
         # Add tab to tab widget
         self.tab_widget.addTab( self.output_error_tab, "stdout/stderr" )
         
-
-        # List widgets for output and errors in the first tab
+        # List widgets for output and errors
         self.output_list = QListWidget( self )
         self.error_list = QListWidget( self )
         # Style
         self.output_list.setAlternatingRowColors( True )
         self.error_list.setAlternatingRowColors( True )
         # Place
-        self.output_error_layout.addWidget( self.output_list )
-        self.output_error_layout.addWidget( self.error_list )
+        self.std_split.addWidget( self.output_list )
+        self.std_split.addWidget( self.error_list )
+        self.output_error_layout.addWidget( self.std_split )
+        # Enable context menu
+        #self.output_list.setContextMenuPolicy( Qt.CustomContextMenu )
+        #self.output_list.customContextMenuRequested.connect( self.show_context_menu )
+        #self.output_list.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        
+        self.set_list_properties( self.output_list )
 
-        #########################
-        # Tab 2
-        #########################
+        self.error_list.setContextMenuPolicy( Qt.CustomContextMenu )
+        self.error_list.customContextMenuRequested.connect( self.show_context_menu )
+        self.error_list.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+    
+    def build_second_tab( self ):
         # Second tab for combined log
         self.combined_tab = QWidget()
         self.combined_layout = QVBoxLayout( self.combined_tab )
@@ -143,40 +170,27 @@ class CodeExecutorWindow( QDialog ):
         self.combined_list = QListWidget( self )
         self.combined_list.setAlternatingRowColors( True )
         self.combined_layout.addWidget( self.combined_list )
-        self.clr_comb_button = QPushButton( "Clear", self )
-        self.combined_layout.addWidget( self.clr_comb_button )
-        self.clr_comb_button.clicked.connect( self.clear_combined )
 
-        ###########################
-        # Context / Scroll in tabs
-        ###########################
-
-        # Enable context menu for all list widgets
-        self.output_list.setContextMenuPolicy( Qt.CustomContextMenu )
-        self.output_list.customContextMenuRequested.connect( self.show_context_menu )
-        self.output_list.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-
-        self.error_list.setContextMenuPolicy( Qt.CustomContextMenu )
-        self.error_list.customContextMenuRequested.connect( self.show_context_menu )
-        self.error_list.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-
+        # Enable context menu
         self.combined_list.setContextMenuPolicy( Qt.CustomContextMenu )
         self.combined_list.customContextMenuRequested.connect(self.show_context_menu)
         self.combined_list.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
 
-        # Connect button to execute code
-        self.run_button.clicked.connect( self.run_code )
+        self.clr_comb_button = QPushButton( "Clear", self )
+        self.combined_layout.addWidget( self.clr_comb_button )
+        self.clr_comb_button.clicked.connect( self.clear_combined )
+    
+    def set_list_properties( self, list_widget ):
+        list_widget.setContextMenuPolicy( Qt.CustomContextMenu )
+        list_widget.customContextMenuRequested.connect( self.show_context_menu )
+        list_widget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
 
-        # Set up window
-        self.setWindowTitle('Executor 2.0')
-        self.show()
-
+    def redirect( self ):
         # Redirect stdout and stderr to custom widgets and the combined log
         self.old_stdout = sys.stdout
         self.old_stderr = sys.stderr
         sys.stdout = OutputRedirector( self.output_list, self.combined_list, "-> " )
         sys.stderr = OutputRedirector( self.error_list, self.combined_list, "!> " )
-
 
     def get_current_cursor( self ):
         cursor = self.code_input.textCursor()
@@ -199,11 +213,13 @@ class CodeExecutorWindow( QDialog ):
 
     def clear_combined( self ):
         self.combined_list.clear()
-    
+
     def custom_input(self, prompt=""):
-        """Custom input function that will wait for input from the QLineEdit."""
+        #\"""Custom input function that will wait for input from the QLineEdit.\"""
         # Display the prompt in the QListWidget
-        self.output_list.addItem( "--> " + str( prompt ) )
+        #print("custom_input")
+        self.output_list.addItem( "" + str( prompt ) )
+        self.input_line.setPlaceholderText( prompt )
         self.output_list.scrollToBottom()
 
         # Show and enable the input line when input is needed
@@ -215,7 +231,7 @@ class CodeExecutorWindow( QDialog ):
 
         # Log the code to the combined widget with a prefix
         self.combined_list.addItem( "?> " + str( prompt ) )
-        self.output_list.addItem( prompt )
+        #self.output_list.addItem( prompt )
 
         # Block execution until input is provided (this will wait until input_value is set)
         while self.waiting_for_input:
@@ -234,7 +250,8 @@ class CodeExecutorWindow( QDialog ):
         return self.input_value
 
     def submit_input(self):
-        """Called when the user presses Enter in the QLineEdit."""
+        #\"""Called when the user presses Enter in the QLineEdit.\"""
+        #print("submit_input")
         if self.waiting_for_input:
             self.input_value = self.input_line.text()
             self.input_line.clear()
@@ -303,12 +320,9 @@ class CodeExecutorWindow( QDialog ):
         event.accept()
 
 
-
-
-# This block only runs when the file is executed directly
 if __name__ == '__main__':
     app = QApplication( sys.argv )
-    window = CodeExecutorWindow()
+    window = Executor()
     sys.exit( app.exec_() )
 
 

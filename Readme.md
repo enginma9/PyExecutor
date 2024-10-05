@@ -17,7 +17,7 @@ you can use normal assignment if you want to load a file to it:
 >>> with open( "project.py", "r" ) as file:
 >>>     text_window.setText( file.read() )
 ```
-OpenCTE.py just does that for you with a file chooser.  Nothing impressive, I just position it and turn off the frame to save screen space.  It does not save files on its own, as its just intended for reference, but you can save its content if you're running it from python console or Executor window:
+OpenCTE.py does that for you with a file chooser.  Nothing impressive, I just position it and turn off the frame to save screen space.  It does not save files on its own, as its just intended for reference, but you can save its content if you're running it from python console or Executor window:
 ```
 from openCTE import text_window
 TW = text_window()
@@ -55,4 +55,4 @@ The primary reason I made this is that I didn't want to use too many calls to AP
 The Testerwindow.py is somewhat a completely different thing, Its meant to add to the testing environment by easily adding buttons to correspond to commands, or TextEdits to hold code needed, etc.  
 You can run some of the text from Examples.py to demonstrate Testerwindow, and live edit the window while its running.
 
-Frameless version window movement doesn't work through all OS, so use at your own risk.  I'm probably going to remove it at some point.
+Frameless version window movement doesn't work through all OS, . 

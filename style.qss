@@ -1,4 +1,4 @@
-QMainWindow, QDialog, QVBoxLayout, QWidget#Executor {
+QMainWindow, QDialog, QVBoxLayout, QWidget#Executor, QWidget#testerwindow > QVBoxLayout {
     background: qlineargradient(x1:0 y1:0, x2:1 y2:1, stop:0 #051c2a stop:1 #44315f);
     border-radius: 5px;
 }
@@ -10,6 +10,35 @@ QPushButton#styleid {
 /* this may be right? in code file: self.top_label1.setProperty('class', 'styleclass') */
 QPushButton.styleclass {
     background-color: qlineargradient( x1:0, x2:1, stop:0 #c75b72, stop: 1 #733e84);
+}
+
+QScrollBar{
+    background:  #000000;
+    border:1px solid #733e84;
+    border-radius:2px;
+}
+QScrollBar::handle
+{
+    background : #c75b72;
+    border:1px solid #733e84;
+    border-radius:5px;
+}
+QScrollBar::handle::pressed
+{
+    background : #c75b72;
+    border:1px solid #733e84;
+    border-radius:5px;
+}
+QScrollBar::up-arrow:vertical {
+    background:  #733e84;
+    border:1px solid #733e84;
+    border-radius:2px;
+}
+
+QScrollBar::down-arrow:vertical {
+    background:  #733e84;
+    border:1px solid #733e84;
+    border-radius:2px;
 }
 
 /* All QPushButtons */
@@ -29,17 +58,26 @@ QTabBar {
     background-color:rgb(68, 44, 71);
 }
 
-QTextEdit, QPlainTextEdit, QLineEdit, QListWidget, CustomTextEdit {
+QTextEdit, QPlainTextEdit, QLineEdit {
     background-color: #000000; 
     border-style: outset;
     border-width: 1px;
     border-color: aqua;
-    border-width: 1px;
     border-radius: 6px;
-    background-color:black;
-    font-size: 14pt
 }
-
+QListWidget {
+    background-color: #000000;
+    color:#ffffff;
+}
+QListWidget::item {
+    background-color:#000000;
+}
+QListWidget::item:alternate {
+    background-color: #222222;
+}
+QListWidget::item:selected {
+    background-color: #733e84;
+}
 
 QPushButton:hover {
     border-width: 2px;
@@ -48,9 +86,3 @@ QPushButton:pressed {
     background-color:#411e46;
     
 }
-
-QListWidget{
-    background-color:black;
-    color:white;
-}
-

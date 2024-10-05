@@ -1,6 +1,6 @@
 import feedparser
-from Tree import *
-from Helpers import heading
+from PyExecutor.Helpers.Tree import *
+from PyExecutor.Helpers.Helpers import heading
 
 if __name__ == "__main__":
     from os import getcwd
