@@ -15,14 +15,16 @@ if __name__ == "__main__":
     from Executor import Executor
     from Testerwindow import testerwindow
 
-def find_hex_color_code(input_string):
+
+def find_hex_color_code( input_string ):
     hex_pattern = r"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\b"
     match = re.search(hex_pattern, input_string)
     if match:
         return match.group(0)
     return ""
 
-class PythonHighlighter(QSyntaxHighlighter):
+
+class PythonHighlighter( QSyntaxHighlighter ):
     """Syntax highlighter for Python code using Pygments and Monokai style"""
 
     def __init__(self, document):
@@ -42,6 +44,7 @@ class PythonHighlighter(QSyntaxHighlighter):
             if format:
                 self.setFormat(index, length, format)
             index += length
+
     def set_lexer( x ):
         self.lexer = x
 
@@ -81,7 +84,7 @@ class QSyntaxHighlighterFormatter:
         return self.formats.get( token_type, QTextCharFormat())  # Return default if not mapped
 
 
-class editor_text_edit(QTextEdit):
+class editor_text_edit( QTextEdit ):
     def __init__(self, parent=None):
         if not QApplication.instance():
             self.app = QApplication( sys.argv )
@@ -95,9 +98,10 @@ class editor_text_edit(QTextEdit):
         font.setPointSize(13)
         self.setFont( font )
         self.setAcceptRichText( False )
-        self.setWindowTitle('Code_Window 2.0')
+        #self.setWindowTitle('Code_Window 2.0')
         #self.setWindowFlags(Qt.FramelessWindowHint)
-        self.show()
+        if __name__ == '__main__':
+            self.show()
 
         # Create context menu items
         self.increase_font_action = QAction( "Increase Font", self )
@@ -157,6 +161,11 @@ class editor_text_edit(QTextEdit):
             background-image:url(""" 
         second = """) 0 0 0 0 stretch stretch;}"""
         self.setStyleSheet( first + image + second ) # self
+
+    def set_lexer( self, lex ):
+        self.highlighter.lexer = lexers.get_lexer_by_name( lex )
+        self.highlighter.rehighlight()
+
 
 if __name__ == '__main__':
     app = QApplication( sys.argv )

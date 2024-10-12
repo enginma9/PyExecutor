@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5 import QtGui
 from CustomText import CustomTextEdit
 from pathlib import Path
-import sys, os, copy
+import sys, os #, copy
 
 
 class text_window( CustomTextEdit ):
